@@ -155,11 +155,31 @@ class FogEdgeBlur extends StatelessWidget {
           );
         }
 
-        return Stack(
-          children: [
-            blurEffect,
-            _buildFogEdgeOverlay(context),
-          ],
+        return LayoutBuilder(
+          builder: (context, constraints) {
+
+            bool isInvalidHeight = (edgeAlign == EdgeAlign.top || edgeAlign == EdgeAlign.bottom)
+                && fogEdgeChild.heightEdge >= constraints.maxHeight;
+
+            bool isInvalidWidth = (edgeAlign == EdgeAlign.left || edgeAlign == EdgeAlign.right)
+                && fogEdgeChild.heightEdge >= constraints.maxWidth;
+
+            if (isInvalidHeight || isInvalidWidth) {
+              throw FlutterError(
+                  'FogEdgeBlur: The heightEdge of fogEdgeChild is too large for the widget.\n'
+                      'For top/bottom edges, heightEdge must be smaller than the widget height.\n'
+                      'For left/right edges, heightEdge must be smaller than the widget width.\n'
+                      'Please adjust heightEdge for a proper fog effect.'
+              );
+            }
+
+            return Stack(
+              children: [
+                blurEffect,
+                _buildFogEdgeOverlay(context),
+              ],
+            );
+          }
         );
       }
     );
