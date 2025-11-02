@@ -29,10 +29,10 @@ flutter pub get
 # FogEdgeBlur Demo
 
 ## Static Image
-![FogEdgeBlur Static](https://github.com/haivc2002/fog_edge_blur/tree/main/demo/static_demo.png)
+![FogEdgeBlur Static](https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/static_demo.png)
 
 ## Animated GIF
-![FogEdgeBlur Animation](https://github.com/haivc2002/fog_edge_blur/tree/main/demo/demo_animation.gif)
+![FogEdgeBlur Animation](https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/static_demo.png)
 
 ## Android Setup
 Important: To ensure the plugin works correctly, you must disable Impeller in your Android project.
@@ -47,22 +47,22 @@ Add the following <meta-data> inside the <application> tag of your AndroidManife
 # Usage Example
 ```dart
 FogEdgeBlur(
-          edgeAlign: EdgeAlign.top,
-          fogEdgeChild: FogEdgeChild(
-            heightEdge: 160,
-          ),
-          child: ListView.builder(
-            itemCount: 20,
-            itemBuilder: (context, index) {
-              return Center(
-                child: Container(
-                  color: Colors.red,
-                  height: 100,
-                  width: 100,
-                  margin: EdgeInsets.only(bottom: 20),
-                ),
-              );
-            },
-          ),
-        )
+  edgeAlign: EdgeAlign.top,
+  fogEdgeChild: FogEdgeChild(
+    heightEdge: 160,
+  ),
+  child: ListView.builder(
+    itemCount: 20,
+    itemBuilder: (context, index) {
+      return Center(
+        child: Container(
+          color: Colors.red,
+          height: 100,
+          width: 100,
+          margin: EdgeInsets.only(bottom: 20),
+        ),
+      );
+    },
+  ),
+)
 ```

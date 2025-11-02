@@ -8,7 +8,6 @@ class FogEdgeBlurCheck {
       final bool result = await _channel.invokeMethod('isImpellerEnabled');
       return result;
     } catch (e) {
-      print('Error checking EnableImpeller: $e');
       return false;
     }
   }

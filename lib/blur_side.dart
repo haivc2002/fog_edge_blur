@@ -2,7 +2,6 @@
 import 'blur_side_base.dart';
 
 // blur_side.dart
-import 'blur_side_base.dart';
 
 class BlurSides extends BlurSidesBase {
   const BlurSides({
