@@ -28,11 +28,7 @@ flutter pub get
 
 # FogEdgeBlur Demo
 
-## Static Image
-![FogEdgeBlur Static](https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/static_demo.png)
-
-## Animated GIF
-![FogEdgeBlur Animation](https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/static_demo.png)
+<p align="center"> <table> <tr> <td align="center"> <img src="https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/static_demo.png" width="300" /> <br><b>Static Image</b> </td> <td align="center"> <img src="https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/demo_animation.gif" width="300" /> <br><b>Animated GIF</b> </td> </tr> </table> </p>
 
 ## Android Setup
 Important: To ensure the plugin works correctly, you must disable Impeller in your Android project.
