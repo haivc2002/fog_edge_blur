@@ -1,6 +1,6 @@
 name: fog_edge_blur
 description: "A Flutter plugin that adds a customizable fog edge blur effect for immersive UI headers, overlays, and scroll effects."
-version: 0.0.1
+version: 0.0.2
 homepage: "https://github.com/haivc2002/fog_edge_blur"
 repository: "https://github.com/haivc2002/fog_edge_blur"
 issue_tracker: "https://github.com/haivc2002/fog_edge_blur/issues"
