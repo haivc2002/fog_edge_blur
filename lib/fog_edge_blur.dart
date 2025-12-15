@@ -72,7 +72,7 @@ class FogEdgeBlur extends StatelessWidget {
     this.quality = BlurQuality.high,
     this.edgeIntensity = 0.08,
     required this.fogEdgeChild,
-  });
+  }) : assert(sigma <= 20, "To ensure UI quality, I have limited the maximum 'Sigma' value to 20.");
 
   /// Preloads shader programs for horizontal and vertical passes.
   static Future<void> precacheShaders() async {
@@ -216,15 +216,25 @@ class FogEdgeBlur extends StatelessWidget {
         width: edgeAlign == EdgeAlign.left || edgeAlign == EdgeAlign.right
             ? fogEdgeChild.heightEdge
             : double.infinity,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [fogEdgeChild.colorEdge, fogEdgeChild.colorEdge.withValues(alpha: 0)],
-              begin: alignmentYColor,
-              end: alignmentXColor
-            )
-          ),
-          child: fogEdgeChild.child,
+        child: Stack(
+          children: [
+            Positioned.fill(child: IgnorePointer(
+              ignoring: true,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      fogEdgeChild.colorEdge,
+                      fogEdgeChild.colorEdge.withValues(alpha: 0),
+                    ],
+                    begin: alignmentYColor,
+                    end: alignmentXColor,
+                  ),
+                ),
+              ),
+            )),
+            Positioned.fill(child: fogEdgeChild.child ?? const SizedBox())
+          ],
         ),
       ),
     );
