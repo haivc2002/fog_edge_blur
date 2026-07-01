@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
 import 'package:fog_edge_blur/fog_edge_blur_meta_check.dart';
 
@@ -55,7 +56,11 @@ class FogEdgeBlur extends StatelessWidget {
   /// Controls rendering quality and kernel size.
   final BlurQuality quality;
 
-  /// Intensity of the blur-to-clear gradient.
+  /// Fraction of the blur zone used for the blur-to-clear transition (0.0 to 1.0).
+  ///
+  /// * `0.0` — uniform blur across the entire zone (like BackdropFilter).
+  /// * `1.0` — blur radius gradually increases across the entire zone.
+  /// * `0.2` — only 20% near the content boundary transitions from clear to full blur.
   final double edgeIntensity;
 
   /// Optional overlay content displayed *above* the blurred edge.
@@ -70,7 +75,7 @@ class FogEdgeBlur extends StatelessWidget {
     required this.edgeAlign,
     this.sigma = 10.0,
     this.quality = BlurQuality.high,
-    this.edgeIntensity = 0.08,
+    this.edgeIntensity = 0.454,
     required this.fogEdgeChild,
   }) : assert(sigma <= 20, "To ensure UI quality, I have limited the maximum 'Sigma' value to 20.");
 
@@ -136,7 +141,7 @@ class FogEdgeBlur extends StatelessWidget {
             horizontalImage?.dispose();
             horizontalPicture?.dispose();
           }
-        }, child: child);
+        }, child: _RealtimeRepaintWrapper(isRealtime: true, child: child));
       }, assetKey: 'packages/fog_edge_blur/shaders/blur_vertical.frag');
     }, assetKey: 'packages/fog_edge_blur/shaders/blur_horizontal.frag');
 
@@ -253,7 +258,8 @@ class FogEdgeBlur extends StatelessWidget {
       ..setFloat(5, sides.left)
       ..setFloat(6, sides.right)
       ..setFloat(7, 0.0)
-      ..setFloat(8, _getAdjustedKernelSize());
+      ..setFloat(8, edgeIntensity)
+      ..setFloat(9, _getAdjustedKernelSize());
     shader.setImageSampler(0, image);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..shader = shader);
     return recorder.endRecording();
@@ -292,5 +298,58 @@ class FogEdgeBlur extends StatelessWidget {
       );
     }
     return sides;
+  }
+}
+
+class _RealtimeRepaintWrapper extends StatefulWidget {
+  final Widget child;
+  final bool isRealtime;
+
+  const _RealtimeRepaintWrapper({
+    required this.child,
+    required this.isRealtime,
+  });
+
+  @override
+  State<_RealtimeRepaintWrapper> createState() => _RealtimeRepaintWrapperState();
+}
+
+class _RealtimeRepaintWrapperState extends State<_RealtimeRepaintWrapper> with SingleTickerProviderStateMixin {
+  late final Ticker _ticker;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = createTicker((_) {
+      if (mounted) {
+        context.findRenderObject()?.markNeedsPaint();
+      }
+    });
+    if (widget.isRealtime) {
+      _ticker.start();
+    }
+  }
+
+  @override
+  void didUpdateWidget(_RealtimeRepaintWrapper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isRealtime != oldWidget.isRealtime) {
+      if (widget.isRealtime) {
+        _ticker.start();
+      } else {
+        _ticker.stop();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }
