@@ -56,11 +56,7 @@ class FogEdgeBlur extends StatelessWidget {
   /// Controls rendering quality and kernel size.
   final BlurQuality quality;
 
-  /// Fraction of the blur zone used for the blur-to-clear transition (0.0 to 1.0).
-  ///
-  /// * `0.0` — uniform blur across the entire zone (like BackdropFilter).
-  /// * `1.0` — blur radius gradually increases across the entire zone.
-  /// * `0.2` — only 20% near the content boundary transitions from clear to full blur.
+  /// Intensity of the blur-to-clear gradient.
   final double edgeIntensity;
 
   /// Optional overlay content displayed *above* the blurred edge.
@@ -75,7 +71,7 @@ class FogEdgeBlur extends StatelessWidget {
     required this.edgeAlign,
     this.sigma = 10.0,
     this.quality = BlurQuality.high,
-    this.edgeIntensity = 0.454,
+    this.edgeIntensity = 0.2,
     required this.fogEdgeChild,
   }) : assert(sigma <= 20, "To ensure UI quality, I have limited the maximum 'Sigma' value to 20.");
 
@@ -258,8 +254,7 @@ class FogEdgeBlur extends StatelessWidget {
       ..setFloat(5, sides.left)
       ..setFloat(6, sides.right)
       ..setFloat(7, 0.0)
-      ..setFloat(8, edgeIntensity)
-      ..setFloat(9, _getAdjustedKernelSize());
+      ..setFloat(8, _getAdjustedKernelSize());
     shader.setImageSampler(0, image);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..shader = shader);
     return recorder.endRecording();

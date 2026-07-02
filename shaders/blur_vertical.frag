@@ -46,44 +46,12 @@ void main() {
         FragColor = originalColor;
         return;
     }
-
-    // Compute per-pixel localSigma for variable blur radius
-    float localSigma = sigma;
-
-    if (edgeIntensity > 0.0) {
-        // Find distance from content boundary into blur zone, and the zone size
-        float edgeDistance = 1e6;
-        float blurZoneSize = 1.0;
-
-        if (inTop) {
-            float d = topEdge - fragCoord.y;
-            if (d < edgeDistance) { edgeDistance = d; blurZoneSize = topEdge; }
-        }
-        if (inBottom) {
-            float d = fragCoord.y - bottomEdge;
-            if (d < edgeDistance) { edgeDistance = d; blurZoneSize = uViewSize.y - bottomEdge; }
-        }
-        if (inLeft) {
-            float d = leftEdge - fragCoord.x;
-            if (d < edgeDistance) { edgeDistance = d; blurZoneSize = leftEdge; }
-        }
-        if (inRight) {
-            float d = fragCoord.x - rightEdge;
-            if (d < edgeDistance) { edgeDistance = d; blurZoneSize = uViewSize.x - rightEdge; }
-        }
-
-        float transitionWidth = blurZoneSize * edgeIntensity;
-        if (edgeDistance < transitionWidth) {
-            localSigma = sigma * smoothstep(0.0, 1.0, edgeDistance / transitionWidth);
-        }
-    }
-
-    // If localSigma is negligible, output original - no blur needed
-    if (localSigma < 0.1) {
-        FragColor = originalColor;
-        return;
-    }
-
+    // Calculate distance to closest edge for smooth transition
+    float edgeDistance = 1e6;
+    if (inTop) edgeDistance = min(edgeDistance, topEdge - fragCoord.y);
+    if (inBottom) edgeDistance = min(edgeDistance, fragCoord.y - bottomEdge);
+    if (inLeft) edgeDistance = min(edgeDistance, leftEdge - fragCoord.x);
+    if (inRight) edgeDistance = min(edgeDistance, fragCoord.x - rightEdge);
     // Use kernel size provided from Dart side
     float kSizeFloat = max(kernelSize, 1.0);
     int kSize = int(kSizeFloat);
@@ -94,7 +62,7 @@ void main() {
         // Small blur: use tight loop bounds
         for (int j = -15; j <= 15; ++j) {
             if (j < -kSize || j > kSize) continue;
-            float weight = getGaussianWeight(j, localSigma);
+            float weight = getGaussianWeight(j, sigma);
             if (weight < 0.001) continue; // Skip negligible weights
             vec2 offset = vec2(0.0, float(j) / uViewSize.y);
             vec2 sampleUV = uv + offset;
@@ -106,7 +74,7 @@ void main() {
         // Medium-small blur: use medium-small loop bounds
         for (int j = -30; j <= 30; ++j) {
             if (j < -kSize || j > kSize) continue;
-            float weight = getGaussianWeight(j, localSigma);
+            float weight = getGaussianWeight(j, sigma);
             if (weight < 0.001) continue; // Skip negligible weights
             vec2 offset = vec2(0.0, float(j) / uViewSize.y);
             vec2 sampleUV = uv + offset;
@@ -118,7 +86,7 @@ void main() {
         // Medium blur: use medium loop bounds
         for (int j = -50; j <= 50; ++j) {
             if (j < -kSize || j > kSize) continue;
-            float weight = getGaussianWeight(j, localSigma);
+            float weight = getGaussianWeight(j, sigma);
             if (weight < 0.001) continue; // Skip negligible weights
             vec2 offset = vec2(0.0, float(j) / uViewSize.y);
             vec2 sampleUV = uv + offset;
@@ -130,7 +98,7 @@ void main() {
         // Large blur: use full loop bounds
         for (int j = -100; j <= 100; ++j) {
             if (j < -kSize || j > kSize) continue;
-            float weight = getGaussianWeight(j, localSigma);
+            float weight = getGaussianWeight(j, sigma);
             if (weight < 0.001) continue; // Skip negligible weights
             vec2 offset = vec2(0.0, float(j) / uViewSize.y);
             vec2 sampleUV = uv + offset;
@@ -139,6 +107,19 @@ void main() {
             weightSum += weight;
         }
     }
-    // Direct output - blur radius itself varies per pixel, no alpha blending
-    FragColor = sumColor / weightSum;
+    vec4 blurredColor = sumColor / weightSum;
+    // Smooth edge transition
+    float blurZoneSize = 1.0;
+    if (inTop) blurZoneSize = topEdge;
+    else if (inBottom) blurZoneSize = uViewSize.y - bottomEdge;
+    else if (inLeft) blurZoneSize = leftEdge;
+    else if (inRight) blurZoneSize = uViewSize.x - rightEdge;
+    
+    float transitionWidth = blurZoneSize * edgeIntensity;
+    float blendFactor = 1.0;
+    if (transitionWidth > 0.0) {
+        blendFactor = smoothstep(0.0, 1.0, edgeDistance / transitionWidth);
+    }
+    // Final blending
+    FragColor = mix(originalColor, blurredColor, blendFactor);
 }
