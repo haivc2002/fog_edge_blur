@@ -28,7 +28,7 @@ flutter pub get
 
 # FogEdgeBlur Demo
 
-<p align="center"> <img src="demo/static_demo.png" width="300" /> <br><b>Static Image</b> </p>
+<p align="center"> <img src="https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/static_demo.png" width="300" /> <br><b>Static Image</b> </p>
 
 ## 🚀 Rendering Algorithms: `original` vs `advanced`
 
@@ -58,14 +58,14 @@ For instance, if your `heightEdge` is `100px`:
 **Visualizing the difference:**
 
 <p align="center">
-  <img src="demo/demo_with_edgeIntensity_0.2.png" width="100%" />
+  <img src="https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/demo_with_edgeIntensity_0.2.png" width="100%" />
   <br><b>edgeIntensity: 0.2</b>
 </p>
 
 To fully appreciate the architectural difference between the `original` and `advanced` pipelines, we can set `edgeIntensity: 1.0`, forcing the variable sigma calculation to stretch across the entire item height:
 
 <p align="center">
-  <img src="demo/demo_with_edgeIntensity_1.0.png" width="100%" />
+  <img src="https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/demo_with_edgeIntensity_1.0.png" width="100%" />
   <br><b>edgeIntensity: 1.0</b>
 </p>
 
