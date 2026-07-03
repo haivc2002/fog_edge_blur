@@ -13,6 +13,14 @@ enum EdgeAlign { top, bottom, right, left }
 /// Controls blur rendering precision and GPU cost.
 enum BlurQuality { low, medium, high }
 
+/// Selects the method used for the fog edge blur.
+enum BlurVersion {
+  /// The standard highly-optimized 2-pass blur using gradient mix (Recommended).
+  original,
+  /// A true variable-sigma blur (May exhibit minor visual artifacts on high sigma).
+  advanced,
+}
+
 /// {@template fog_edge_blur}
 /// A customizable widget that applies a soft, shader-based fog or blur
 /// effect along one edge of its child content.
@@ -65,6 +73,9 @@ class FogEdgeBlur extends StatelessWidget {
   /// that appear within the fog region.
   final FogEdgeChild fogEdgeChild;
 
+  /// Selects between the original mix-based blur or the advanced variable blur.
+  final BlurVersion blurVersion;
+
   const FogEdgeBlur({
     super.key,
     required this.child,
@@ -73,6 +84,7 @@ class FogEdgeBlur extends StatelessWidget {
     this.quality = BlurQuality.high,
     this.edgeIntensity = 0.2,
     required this.fogEdgeChild,
+    this.blurVersion = BlurVersion.original,
   }) : assert(sigma <= 20, "To ensure UI quality, I have limited the maximum 'Sigma' value to 20.");
 
   /// Preloads shader programs for horizontal and vertical passes.
@@ -105,6 +117,8 @@ class FogEdgeBlur extends StatelessWidget {
               image,
               size,
               normalizedBlurSides,
+              edgeIntensity,
+              blurVersion.index.toDouble(),
             );
             horizontalImage = horizontalPicture.toImageSync(
               size.width.toInt(),
@@ -121,7 +135,8 @@ class FogEdgeBlur extends StatelessWidget {
               ..setFloat(6, normalizedBlurSides.right)
               ..setFloat(7, 0.0)
               ..setFloat(8, edgeIntensity)
-              ..setFloat(9, _getAdjustedKernelSize());
+              ..setFloat(9, blurVersion.index.toDouble())
+              ..setFloat(10, _getAdjustedKernelSize());
 
             verticalShader.setImageSampler(0, horizontalImage);
             verticalShader.setImageSampler(1, image);
@@ -242,7 +257,7 @@ class FogEdgeBlur extends StatelessWidget {
   }
 
   ui.Picture _createHorizontalPass(
-      ui.FragmentShader shader, ui.Image image, Size size, BlurSidesBase sides) {
+      ui.FragmentShader shader, ui.Image image, Size size, BlurSidesBase sides, double edgeIntensity, double blurVersion) {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     shader
@@ -254,7 +269,9 @@ class FogEdgeBlur extends StatelessWidget {
       ..setFloat(5, sides.left)
       ..setFloat(6, sides.right)
       ..setFloat(7, 0.0)
-      ..setFloat(8, _getAdjustedKernelSize());
+      ..setFloat(8, edgeIntensity)
+      ..setFloat(9, blurVersion)
+      ..setFloat(10, _getAdjustedKernelSize());
     shader.setImageSampler(0, image);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..shader = shader);
     return recorder.endRecording();

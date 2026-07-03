@@ -9,3 +9,8 @@
 ## 0.0.5
 - Improve edge blur transition logic to scale proportionally to the blur region size.
 - Fix streaking/stretching artifacts at the blur boundary when `edgeIntensity` is set to 0.0.
+
+## 0.0.6
+- **New Feature**: Introduce `BlurVersion` enum to support dual rendering pipelines (`original` and `advanced`).
+- **Original Mode** (Default): Uses a highly optimized hardware-accelerated gradient mix for ultra-smooth 120fps performance without banding artifacts.
+- **Advanced Mode**: Implements true dynamic-radius variable blur. Includes Minimum Sigma Clamping, Sub-threshold Soft Blending, and AAA-grade Interleaved Gradient Noise (IGN) dithering to eliminate pixelation and banding.
