@@ -14,3 +14,6 @@
 - **New Feature**: Introduce `BlurVersion` enum to support dual rendering pipelines (`original` and `advanced`).
 - **Original Mode** (Default): Uses a highly optimized hardware-accelerated gradient mix for ultra-smooth 120fps performance without banding artifacts.
 - **Advanced Mode**: Implements true dynamic-radius variable blur. Includes Minimum Sigma Clamping, Sub-threshold Soft Blending, and AAA-grade Interleaved Gradient Noise (IGN) dithering to eliminate pixelation and banding.
+
+## 0.0.7
+- Update README
