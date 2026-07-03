@@ -57,17 +57,15 @@ For instance, if your `heightEdge` is `100px`:
 
 **Visualizing the difference:**
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/demo_with_edgeIntensity_0.2.png" width="100%" />
-  <br><b>edgeIntensity: 0.2</b>
-</p>
+![edgeIntensity 0.2](https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/demo_with_edgeIntensity_0.2.png)
+
+**edgeIntensity: 1.0**
 
 To fully appreciate the architectural difference between the `original` and `advanced` pipelines, we can set `edgeIntensity: 1.0`, forcing the variable sigma calculation to stretch across the entire item height:
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/demo_with_edgeIntensity_1.0.png" width="100%" />
-  <br><b>edgeIntensity: 1.0</b>
-</p>
+![edgeIntensity 1.0](https://raw.githubusercontent.com/haivc2002/fog_edge_blur/main/demo/demo_with_edgeIntensity_1.0.png)
+
+**edgeIntensity: 1.0**
 
 ## Android Setup
 Important: To ensure the plugin works correctly, you must disable Impeller in your Android project.
