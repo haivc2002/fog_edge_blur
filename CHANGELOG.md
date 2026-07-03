@@ -16,4 +16,7 @@
 - **Advanced Mode**: Implements true dynamic-radius variable blur. Includes Minimum Sigma Clamping, Sub-threshold Soft Blending, and AAA-grade Interleaved Gradient Noise (IGN) dithering to eliminate pixelation and banding.
 
 ## 0.0.7
-- Update README
+- Fix broken demo images in README.md.
+
+## 0.0.8
+- **New Feature**: Added support for Swift Package Manager (SPM). This prepares the plugin for Flutter 3.44+ where SPM becomes the default for iOS and macOS.
